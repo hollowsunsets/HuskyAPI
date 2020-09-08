@@ -1,0 +1,38 @@
+{
+  "name": "huskyapi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "chai": "^4.2.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.10.3",
+    "winston": "^3.3.3"
+  },
+  "devDependencies": {
+    "eslint": "^7.8.1",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "mocha": "^8.1.3",
+    "nodemon": "^2.0.4"
+  },
+  "scripts": {
+    "start": "node src/app.js",
+    "test": "mocha",
+    "lint": "eslint src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/huskyapi/HuskyAPI.git"
+  },
+  "author": "Isabel Giang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/huskyapi/HuskyAPI/issues"
+  },
+  "homepage": "https://github.com/huskyapi/HuskyAPI#readme"
+}
