@@ -23,7 +23,8 @@
   "scripts": {
     "start": "node src/app.js",
     "test": "mocha",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "lint-fix": "eslint src --fix"
   },
   "repository": {
     "type": "git",
