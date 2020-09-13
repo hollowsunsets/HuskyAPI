@@ -107,8 +107,10 @@ app.post('/login', (req, res) => {
 
 // Protected Routes to get information about UW Courses
 app.get('/courses', (req, res) => {
+  // Get query parameters from the api endpoint
   const params = req.query
 
+  // This is what will be returned to the user if they have a valid API key
   const mockCourseInfo = {
     courseCode: 'CSS481',
     instructor: 'John Stager',
