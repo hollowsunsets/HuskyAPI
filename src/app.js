@@ -1,23 +1,144 @@
-const express = require('express')
+require("dotenv").config();
+const express = require("express")
+const bodyParser = require("body-parser")
+const ejs = require("ejs");
+const mongoose = require("mongoose")
+const bcrypt = require('bcryptjs')
+
+const saltRounds = 10
+
 const app = express()
-const port = 3000
+const port = 5000
 
-app.get('/', (req, res) => {
-  res.send('Hello world!')
+mongoose.connect(process.env.AUTH_DB, { useNewUrlParser: true, useUnifiedTopology: true })
+
+app.use(express.static("public"))
+app.set("view engine", "ejs")
+app.use(bodyParser.urlencoded({
+  extended: true
+}))
+
+// Home Page
+app.get("/", (req, res) => {
+  res.render("home")
 })
 
-app.post('/', (req, res) => {
-  res.send('Got a POST request!')
+// User Registration
+const userSchema = new mongoose.Schema({
+  email: String,
+  password: String,
+  key: String
 })
 
-app.put('/user', (req, res) => {
-  res.send('Got a PUT request at /user')
+const User = new mongoose.model("User", userSchema)
+
+const genKey = () => {
+  // create a base-36 string that is always 30 chars long a-z0-9
+  // 'an0qrr5i9u0q4km27hv2hue3ywx3uu'
+  return [...Array(30)]
+    .map((e) => ((Math.random() * 36) | 0).toString(36))
+    .join('')
+};
+
+app.get("/register", (req, res) => {
+  res.render('register')
 })
 
-app.delete('/user', (req, res) => {
-  res.send('Got a DELETE request at /user')
+// Process of creating a user
+app.post("/register", (req, res) => {
+  const encryptedPassword = ""
+
+  // TODO: Implement duplicate-key checking logic
+  const apiKey = genKey()
+
+  // Encrypt password
+  bcrypt.hash(req.body.password, saltRounds, (err, hash) => {
+    if (err) {
+      console.log(err)
+    } else {
+      const newUser = new User({
+        email: req.body.username,
+        password: hash,
+        key: apiKey
+      })
+
+      newUser.save((err) => {
+        if (err) {
+          console.log(err)
+        } else {
+          res.render("account", {
+            key: apiKey
+          })
+        }
+      })
+    }
+  })
 })
 
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`)
+// Login Process
+app.get("/login", (req, res) => {
+  res.render("login")
 })
+
+app.post("/login", (req, res) => {
+  const userName = req.body.username
+  const password = req.body.password
+
+  User.findOne({ email: userName }, (err, foundUser) => {
+    if (err) {
+      console.log(err)
+    } else {
+      if (foundUser) {
+        bcrypt.compare(password, foundUser.password, (err, result) => {
+          if (result === true) {
+            res.render("account", {
+              key: foundUser.key
+            })
+          } else {
+            console.log("Either username and/or password details are incorrect!")
+          }
+        })
+      }
+    }
+  })
+})
+
+// Protected Routes to get information about UW Courses
+app.get('/courses', (req, res) => {
+  const params = req.query
+
+  const mockCourseInfo = {
+    courseCode: "CSS481",
+    instructor: "John Stager",
+    quarterOffered: "W20",
+    credits: 5
+  }
+
+  if (!("appid" in params)) {
+    res.status(401)
+    res.send("No API Key provided")
+  } else {
+    // Check if API Key is valid
+    // TODO: Optimize validity checking algo
+    User.find({}, (err, result) => {
+      if (err) {
+        res.send(err)
+      } else {
+        let keyFound = false
+        for (const doc of result) {
+          if (doc.key === params.appid) {
+            keyFound = true
+            res.send(mockCourseInfo)
+          }
+        }
+
+        if (!keyFound) {
+          res.status(401)
+          res.send("API Key Invalid")
+        }
+      }
+    })
+  }
+})
+
+app.listen(port, () => console.log("Server started on port " + port))
