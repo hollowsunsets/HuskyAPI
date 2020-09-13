@@ -29,7 +29,8 @@ const userSchema = new mongoose.Schema({
   key: String
 })
 
-const User = new mongoose.Model('User', userSchema)
+const Model = mongoose.model
+const User = new Model('User', userSchema)
 
 const GenKey = () => {
   // create a base-36 string that is always 30 chars long a-z0-9
