@@ -1,7 +1,6 @@
 require('dotenv').config()
 const express = require('express')
 const bodyParser = require('body-parser')
-const ejs = require('ejs')
 const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs')
 
@@ -32,7 +31,7 @@ const userSchema = new mongoose.Schema({
 
 const User = new mongoose.model('User', userSchema)
 
-const genKey = () => {
+const GenKey = () => {
   // create a base-36 string that is always 30 chars long a-z0-9
   // 'an0qrr5i9u0q4km27hv2hue3ywx3uu'
   return [...Array(30)]
@@ -47,7 +46,7 @@ app.get('/register', (req, res) => {
 // Process of creating a user
 app.post('/register', (req, res) => {
   // TODO: Implement duplicate-key checking logic
-  const apiKey = genKey()
+  const apiKey = GenKey()
 
   // Encrypt password
   bcrypt.hash(req.body.password, saltRounds, (err, hash) => {
