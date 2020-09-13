@@ -1,8 +1,8 @@
-require("dotenv").config();
-const express = require("express")
-const bodyParser = require("body-parser")
-const ejs = require("ejs");
-const mongoose = require("mongoose")
+require('dotenv').config()
+const express = require('express')
+const bodyParser = require('body-parser')
+const ejs = require('ejs')
+const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs')
 
 const saltRounds = 10
@@ -12,15 +12,15 @@ const port = 5000
 
 mongoose.connect(process.env.AUTH_DB, { useNewUrlParser: true, useUnifiedTopology: true })
 
-app.use(express.static("public"))
-app.set("view engine", "ejs")
+app.use(express.static('public'))
+app.set('view engine', 'ejs')
 app.use(bodyParser.urlencoded({
   extended: true
 }))
 
 // Home Page
-app.get("/", (req, res) => {
-  res.render("home")
+app.get('/', (req, res) => {
+  res.render('home')
 })
 
 // User Registration
@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema({
   key: String
 })
 
-const User = new mongoose.model("User", userSchema)
+const User = new mongoose.model('User', userSchema)
 
 const genKey = () => {
   // create a base-36 string that is always 30 chars long a-z0-9
@@ -38,16 +38,14 @@ const genKey = () => {
   return [...Array(30)]
     .map((e) => ((Math.random() * 36) | 0).toString(36))
     .join('')
-};
+}
 
-app.get("/register", (req, res) => {
+app.get('/register', (req, res) => {
   res.render('register')
 })
 
 // Process of creating a user
-app.post("/register", (req, res) => {
-  const encryptedPassword = ""
-
+app.post('/register', (req, res) => {
   // TODO: Implement duplicate-key checking logic
   const apiKey = genKey()
 
@@ -66,7 +64,7 @@ app.post("/register", (req, res) => {
         if (err) {
           console.log(err)
         } else {
-          res.render("account", {
+          res.render('account', {
             key: apiKey
           })
         }
@@ -76,11 +74,11 @@ app.post("/register", (req, res) => {
 })
 
 // Login Process
-app.get("/login", (req, res) => {
-  res.render("login")
+app.get('/login', (req, res) => {
+  res.render('login')
 })
 
-app.post("/login", (req, res) => {
+app.post('/login', (req, res) => {
   const userName = req.body.username
   const password = req.body.password
 
@@ -90,12 +88,16 @@ app.post("/login", (req, res) => {
     } else {
       if (foundUser) {
         bcrypt.compare(password, foundUser.password, (err, result) => {
-          if (result === true) {
-            res.render("account", {
-              key: foundUser.key
-            })
+          if (!err) {
+            if (result === true) {
+              res.render('account', {
+                key: foundUser.key
+              })
+            } else {
+              console.log('Either username and/or password details are incorrect!')
+            }
           } else {
-            console.log("Either username and/or password details are incorrect!")
+            console.log(err)
           }
         })
       }
@@ -108,15 +110,15 @@ app.get('/courses', (req, res) => {
   const params = req.query
 
   const mockCourseInfo = {
-    courseCode: "CSS481",
-    instructor: "John Stager",
-    quarterOffered: "W20",
+    courseCode: 'CSS481',
+    instructor: 'John Stager',
+    quarterOffered: 'W20',
     credits: 5
   }
 
-  if (!("appid" in params)) {
+  if (!('appid' in params)) {
     res.status(401)
-    res.send("No API Key provided")
+    res.send('No API Key provided')
   } else {
     // Check if API Key is valid
     // TODO: Optimize validity checking algo
@@ -134,11 +136,11 @@ app.get('/courses', (req, res) => {
 
         if (!keyFound) {
           res.status(401)
-          res.send("API Key Invalid")
+          res.send('API Key Invalid')
         }
       }
     })
   }
 })
 
-app.listen(port, () => console.log("Server started on port " + port))
+app.listen(port, () => console.log('Server started on port ' + port))
