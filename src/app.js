@@ -3,6 +3,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs')
+const path = require('path')
 
 const saltRounds = 10
 
@@ -12,6 +13,7 @@ const port = 5000
 mongoose.connect(process.env.AUTH_DB, { useNewUrlParser: true, useUnifiedTopology: true })
 
 app.use(express.static('public'))
+app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs')
 app.use(bodyParser.urlencoded({
   extended: true
