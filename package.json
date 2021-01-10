@@ -10,7 +10,10 @@
     "dotenv": "^8.2.0",
     "ejs": "^3.1.5",
     "express": "^4.17.1",
+    "express-pino-logger": "^5.0.0",
     "mongoose": "^5.10.5",
+    "pino": "^6.10.0",
+    "pino-pretty": "^4.3.0",
     "winston": "^3.3.3"
   },
   "devDependencies": {
